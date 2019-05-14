@@ -30,10 +30,15 @@ namespace KeyValueDatabase.Controllers
 
         // POST api/value
         [HttpPost]
-        public void Post([FromBody] KeyValuePair<String, String> pairKeyValue)
+        public async void Post([FromBody] KeyValuePair<String, String> pairKeyValue)
         {
             db.setValue(pairKeyValue.Key, pairKeyValue.Value);
-            mailing.MakeNewsletter(pairKeyValue);
+            await mailing.MakeNewsletterAsync(pairKeyValue);
+        }
+
+        public void POST([FromBody] String keyValue)
+        {
+            db.setValue(keyValue.Split(':')[0], keyValue.Split(':')[1]);
         }
 
         [HttpPost]

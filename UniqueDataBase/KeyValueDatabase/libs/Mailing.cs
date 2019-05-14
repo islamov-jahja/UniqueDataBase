@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
+using System.Net.Http;
 
 namespace KeyValueDatabase.libs
 {
@@ -22,8 +23,15 @@ namespace KeyValueDatabase.libs
             urls.Remove(Consts.myURL);
         }
 
-        public bool MakeNewsletter(KeyValuePair<String, String> pairKeyValue)
+        public async Task<bool> MakeNewsletterAsync(KeyValuePair<String, String> pairKeyValue)
         {
+            HttpClient client = new HttpClient();
+            String message = $"{pairKeyValue.Key}:{pairKeyValue.Value}";
+
+            foreach(string port in urls)
+            {
+                await client.PostAsJsonAsync($"http://127.0.0.1:{port}", message);
+            }
 
             return true;
         }
@@ -34,6 +42,7 @@ namespace KeyValueDatabase.libs
             foreach(String value in urls)
                 Console.WriteLine($"AAAAAAAA    {value}");
         }
+        
         private List<String> urls = new List<String>();
     }
 }
