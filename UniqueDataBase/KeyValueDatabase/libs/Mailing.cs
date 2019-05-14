@@ -27,6 +27,13 @@ namespace KeyValueDatabase.libs
 
             return true;
         }
+
+        public void ShowUrls()
+        {
+            Console.WriteLine("AAA    " + urls.Count());
+            foreach(String value in urls)
+                Console.WriteLine($"AAAAAAAA    {value}");
+        }
         private List<String> urls = new List<String>();
     }
 }

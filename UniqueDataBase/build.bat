@@ -21,6 +21,10 @@ if defined version (
         cd KeyValueDatabase
         xcopy ..\..\..\KeyValueDatabase\bin\Debug\netcoreapp2.2\publish /S
 		cd ..
+		mkdir client1
+        cd client1
+        xcopy ..\..\..\client1\bin\Debug\netcoreapp2.2\publish /S
+		cd ..
         xcopy ..\..\run_servers_with_dB.bat
 
         echo KeyValueDatabase:5000> config.txt
