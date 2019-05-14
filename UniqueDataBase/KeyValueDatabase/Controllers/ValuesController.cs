@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using KeyValueDatabase.libs;
+using System.Net.Http;
 
 namespace KeyValueDatabase.Controllers
 {
@@ -28,7 +29,7 @@ namespace KeyValueDatabase.Controllers
             return "value";
         }
 
-        // POST api/value
+        // POST api/values
         [HttpPost]
         public async void Post([FromBody] KeyValuePair<String, String> pairKeyValue)
         {
@@ -42,10 +43,11 @@ namespace KeyValueDatabase.Controllers
         }
 
         [HttpPost]
-        public String Post([FromBody] string key)
+        public string Post([FromBody]string key)
         {
-            mailing.ShowUrls();
-            return db.GetValue(key);
+            //mailing.ShowUrls();
+            Console.WriteLine("AAAAAAAAA");
+            return  db.GetValue(key);
         }
 
         // PUT api/values/5

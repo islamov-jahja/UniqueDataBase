@@ -1,19 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Net.Http;
 
-namespace DataBase
+namespace DataBaseLib
 {
     public class DataBase
     {
         private String _dataBaseHost;
-        public Class1(String dataBaseHost)
+        public DataBase(String dataBaseHost)
         {
             _dataBaseHost = dataBaseHost;
         }
 
-        public async string GetValue(String key)
+        public async Task<string> GetValue(String key)
         {
             HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.PostAsJsonAsync(_dataBaseHost, key);
+            HttpResponseMessage response = await client.PostAsync($"{_dataBaseHost}/api/values", new StringContent(key));
             
             using(HttpContent responseContent = response.Content)
             {

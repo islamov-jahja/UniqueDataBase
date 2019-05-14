@@ -1,5 +1,6 @@
 ﻿using System;
-using DataBase;
+using System.Net.Http;
+using DataBaseLib;
 
 namespace client1
 {
@@ -7,7 +8,13 @@ namespace client1
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            DataBase db = new DataBase("http://127.0.0.1:5001");
+            Console.ReadKey();
+            for(int i = 1; i < 2; i++)
+            {
+                Console.WriteLine(db.GetValue("aa"));
+            }
+            Console.ReadKey();
         }
     }
 }

@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataBase\DataBase.csproj" />
+    <ProjectReference Include="..\libs\DataBaseLib\DataBaseLib.csproj" />
   </ItemGroup>
 
 </Project>
