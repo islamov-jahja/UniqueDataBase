@@ -11,6 +11,9 @@ namespace KeyValueDatabase.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        private DataBase db = new DataBase();
+        private Mailing mailing = new Mailing();
+
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
@@ -25,10 +28,18 @@ namespace KeyValueDatabase.Controllers
             return "value";
         }
 
-        // POST api/values
+        // POST api/value
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void Post([FromBody] KeyValuePair<String, String> pairKeyValue)
         {
+            db.setValue(pairKeyValue.Key, pairKeyValue.Value);
+            mailing.MakeNewsletter(pairKeyValue);
+        }
+
+        [HttpPost]
+        public String Post([FromBody] string key)
+        {
+            return db.GetValue(key);
         }
 
         // PUT api/values/5

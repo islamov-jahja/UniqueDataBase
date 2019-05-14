@@ -7,6 +7,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using KeyValueDatabase.libs;
 
 namespace KeyValueDatabase
 {
@@ -14,6 +15,7 @@ namespace KeyValueDatabase
     {
         public static void Main(string[] args)
         {
+            Consts.myURL = args[0];
             CreateWebHostBuilder(args).Build().Run();
         }
 
