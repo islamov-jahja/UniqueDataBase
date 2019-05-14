@@ -44,6 +44,7 @@ namespace KeyValueDatabase.Controllers
         [HttpPost]
         public String Post([FromBody] string key)
         {
+            mailing.ShowUrls();
             return db.GetValue(key);
         }
 

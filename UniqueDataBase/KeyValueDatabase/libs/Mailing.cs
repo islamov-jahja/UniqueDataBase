@@ -12,15 +12,21 @@ namespace KeyValueDatabase.libs
     {
         public Mailing()
         {
-            StreamReader fileWithUrls = new StreamReader(Consts.PATH_TO_FILE_WITH_URLS);
-            String line;
-            while(!fileWithUrls.EndOfStream)
+            try
             {
-                line = fileWithUrls.ReadLine();
-                urls.Add(line.Split(':')[1]);
-            }
+                StreamReader fileWithUrls = new StreamReader(Consts.PATH_TO_FILE_WITH_URLS);
+                String line;
+                while(!fileWithUrls.EndOfStream)
+                {
+                    line = fileWithUrls.ReadLine();
+                    urls.Add(line.Split(':')[1]);
+                }
 
-            urls.Remove(Consts.myURL);
+                urls.Remove(Consts.myURL);
+            }catch
+            {
+                Console.WriteLine("file not found");
+            }
         }
 
         public async Task<bool> MakeNewsletterAsync(KeyValuePair<String, String> pairKeyValue)
@@ -30,7 +36,7 @@ namespace KeyValueDatabase.libs
 
             foreach(string port in urls)
             {
-                await client.PostAsJsonAsync($"http://127.0.0.1:{port}", message);
+                await client.PostAsJsonAsync($"http://127.0.0.1:{port}/api/values", message);
             }
 
             return true;
