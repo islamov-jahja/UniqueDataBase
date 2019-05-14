@@ -30,26 +30,27 @@ namespace KeyValueDatabase.Controllers
         }
 
         // POST api/values
-        [HttpPost]
-        public async void Post([FromBody] KeyValuePair<String, String> pairKeyValue)
+        [HttpPost("/setValue")]
+        public async void SetValue([FromBody] KeyValuePair<String, String> pairKeyValue)
         {
             db.setValue(pairKeyValue.Key, pairKeyValue.Value);
             await mailing.MakeNewsletterAsync(pairKeyValue);
         }
 
-        public void POST([FromBody] String keyValue)
+        [HttpPost]
+        public void SetValueWithoutMakeNewsLetter([FromBody] String keyValue)
         {
             db.setValue(keyValue.Split(':')[0], keyValue.Split(':')[1]);
         }
 
-        [HttpPost]
-        public string Post([FromBody]string key)
+        [HttpPost("/getValue")]
+        public string GetValue([FromBody]String key)
         {
             //mailing.ShowUrls();
             Console.WriteLine("AAAAAAAAA");
             return  db.GetValue(key);
         }
-
+        
         // PUT api/values/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)

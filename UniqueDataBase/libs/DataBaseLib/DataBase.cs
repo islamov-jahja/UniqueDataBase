@@ -17,7 +17,7 @@ namespace DataBaseLib
         public async Task<string> GetValue(String key)
         {
             HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.PostAsync($"{_dataBaseHost}/api/values", new StringContent(key));
+            HttpResponseMessage response = await client.PostAsJsonAsync($"{_dataBaseHost}/api/values/getValue", key);
             
             using(HttpContent responseContent = response.Content)
             {
