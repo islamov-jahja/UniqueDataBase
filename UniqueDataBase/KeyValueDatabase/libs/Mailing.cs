@@ -10,7 +10,25 @@ namespace KeyValueDatabase.libs
 {
    public class Mailing
     {
-        public Mailing()
+        private static volatile Mailing _instance;
+        private static object _sync = new object();
+
+        public static Mailing GetInstance()
+        {
+            if (_instance == null)
+            {
+                lock (_sync)
+                {
+                    if (_instance == null)
+                    {
+                        _instance = new Mailing();
+                    }
+                }
+            }
+
+            return _instance;
+        }
+        private Mailing()
         {
             try
             {
@@ -29,26 +47,36 @@ namespace KeyValueDatabase.libs
             }
         }
 
-        public async Task<bool> MakeNewsletterAsync(KeyValuePair<String, String> pairKeyValue)
+        public async Task<bool> MakeNewsletterAsync(String pairKeyValue)
         {
+            String[] values = pairKeyValue.Split(':');
             HttpClient client = new HttpClient();
-            String message = $"{pairKeyValue.Key}:{pairKeyValue.Value}";
+            String message = $"{values[0]}:{values[1]}";
 
             foreach(string port in urls)
             {
-                await client.PostAsJsonAsync($"http://127.0.0.1:{port}/api/values", message);
+                await client.PostAsJsonAsync($"http://127.0.0.1:{port}/setWithoutSend", message);
             }
 
             return true;
         }
-
-        public void ShowUrls()
-        {
-            Console.WriteLine("AAA    " + urls.Count());
-            foreach(String value in urls)
-                Console.WriteLine($"AAAAAAAA    {value}");
-        }
         
+
+        public void BaseWasUpdated()
+        {
+            HttpClient client = new HttpClient();
+            foreach(string port in urls)
+            {
+                try{
+                    client.GetAsync($"http://127.0.0.1:{port}/api/values");
+                    break;
+                }catch
+                {
+                    continue;
+                }
+            }
+        }
+
         private List<String> urls = new List<String>();
     }
 }

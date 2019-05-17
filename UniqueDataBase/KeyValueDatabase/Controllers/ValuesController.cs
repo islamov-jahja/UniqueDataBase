@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using KeyValueDatabase.libs;
 using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace KeyValueDatabase.Controllers
 {
@@ -12,14 +13,14 @@ namespace KeyValueDatabase.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        private DataBase db = new DataBase();
-        private Mailing mailing = new Mailing();
+        private DataBase db = DataBase.GetInstance();
+        private Mailing mailing = Mailing.GetInstance();
 
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public void Get()
         {
-            return new string[] { "value1", "value2" };
+            db.ToSaveData();
         }
 
         // GET api/values/5
@@ -31,23 +32,23 @@ namespace KeyValueDatabase.Controllers
 
         // POST api/values
         [HttpPost("/setValue")]
-        public async void SetValue([FromBody] KeyValuePair<String, String> pairKeyValue)
+        public async void SetValue([FromBody] String pairKeyValue)
         {
-            db.setValue(pairKeyValue.Key, pairKeyValue.Value);
+            String[] values = pairKeyValue.Split(':');
+            db.setValue(values[0], values[1]);
             await mailing.MakeNewsletterAsync(pairKeyValue);
         }
 
-        [HttpPost]
-        public void SetValueWithoutMakeNewsLetter([FromBody] String keyValue)
+        [HttpPost("/setWithoutSend")]
+        public void SetValueWithoutMakeNewsLetter([FromBody] String pairKeyValue)
         {
-            db.setValue(keyValue.Split(':')[0], keyValue.Split(':')[1]);
+            String[] values = pairKeyValue.Split(':');
+            db.setValue(values[0], values[1]);
         }
 
         [HttpPost("/getValue")]
         public string GetValue([FromBody]String key)
         {
-            //mailing.ShowUrls();
-            Console.WriteLine("AAAAAAAAA");
             return  db.GetValue(key);
         }
         
