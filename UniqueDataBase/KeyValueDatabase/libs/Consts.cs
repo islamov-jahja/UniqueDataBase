@@ -12,6 +12,7 @@ namespace KeyValueDatabase.libs
         public const String PATH_TO_FILE_WITH_BASE = "../base.txt";
         public const String PATH_TO_FILE_WITH_URLS = "../config.txt";
         public const String HOST_PRESERVING_COMPONENT = "http://127.0.0.1:5010";
-        public static String myURL;
+        public static String MY_URL;
+        public const String NO_LEADER = "not leader";
     }
 }

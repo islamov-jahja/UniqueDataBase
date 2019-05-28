@@ -13,23 +13,69 @@ namespace KeyValueDatabase.libs
     {
         private static volatile DataBase _instance;
         private static object _sync = new object();
-        private Dictionary<String, String> _mapWithData = new Dictionary<String, String>();
+        private static Dictionary<String, String> _mapWithData = new Dictionary<String, String>();
+        public static Dictionary<String, int> _condidateSAndVotes = new Dictionary<string, int>();
+        private static Dictionary<String, String> _notMailingData = new Dictionary<string, string>();
+        private string _tempPortOfLeader;
+        public string _portOfLeader;  
+        public bool isCondidate;
+
+        private bool _isWait;
+
+        public string GetDict()
+        {
+            return JsonConvert.SerializeObject(_mapWithData);
+        }
+        public void ToVote(string port)
+        {
+            int countOfVotes = 0;
+            _condidateSAndVotes.TryGetValue(port, out countOfVotes);
+
+            if(_condidateSAndVotes.ContainsKey(port))
+            {
+                _condidateSAndVotes.Remove(port);
+                _condidateSAndVotes.Add(port, countOfVotes++);
+            }else
+            {
+                _condidateSAndVotes.Add(port, 1);
+            }
+        }
+
         private DataBase()
         {
-            ToSaveData();
+            _portOfLeader = Consts.NO_LEADER;
+        }
+
+        public async void UploadData(Dictionary<String, String> tempDict)
+        {
             Mailing mailing = Mailing.GetInstance();
-            mailing.BaseWasUpdated();
-
-            StreamReader file = new StreamReader(Consts.PATH_TO_FILE_WITH_BASE);
-
-            String[] keyValue;
-            while(!file.EndOfStream)
+            foreach(KeyValuePair<String, String> pair in tempDict)
             {
-                keyValue = file.ReadLine().Split(':');
-                _mapWithData.Add(keyValue[0], keyValue[1]);
+                SetValue(pair.Key, pair.Value);
+                await mailing.MakeNewsletterAsync($"{pair.Key}:{pair.Value}");
             }
+        }
 
-            file.Close();
+        public async void SendDataBase()
+        {
+            string json = JsonConvert.SerializeObject(_mapWithData);
+            HttpClient client = new HttpClient();
+            await client.PostAsJsonAsync($"http://127.0.0.1:{_portOfLeader}/sendDict", json);
+        }
+        public bool IamLeader()
+        {
+            Console.WriteLine("Count: " + _condidateSAndVotes.Count);
+            if (_condidateSAndVotes.Count == 1)
+            {
+                foreach (KeyValuePair<String, int> pair in _condidateSAndVotes)
+                {
+                    if (pair.Key == Consts.MY_URL){
+                        return true;
+                    }
+                }
+            }
+            
+            return false;   
         }
 
         public static DataBase GetInstance()
@@ -55,18 +101,36 @@ namespace KeyValueDatabase.libs
             return value;
         }
 
-        public bool setValue(String key, String value)
+        public bool SetValue(String key, String value)
+        {
+            bool wasSaved = false;
+
+            if (_portOfLeader == Consts.NO_LEADER)
+            {
+                wasSaved = SaveDataToDataBase(_notMailingData, key, value);
+            }else
+            {   
+                wasSaved = SaveDataToDataBase(_mapWithData, key, value);
+            }
+
+            Console.WriteLine($"port leader: {_portOfLeader}");
+
+            return wasSaved;
+        }
+
+        private bool SaveDataToDataBase(Dictionary<string, string> dictToSave,String key, String value)
         {
             try{
-                if(_mapWithData.ContainsKey(key))
+                if(dictToSave.ContainsKey(key))
                 {
-                    _mapWithData.Remove(key); 
-                    _mapWithData.Add(key, value);
+                    dictToSave.Remove(key); 
+                    dictToSave.Add(key, value);
                 }else
                 {
-                    _mapWithData.Add(key, value);
+                    dictToSave.Add(key, value);
                 }
-
+                
+                _mapWithData = dictToSave;
                 return true; 
             }
             catch
@@ -75,21 +139,8 @@ namespace KeyValueDatabase.libs
             }
         }
 
-        public async void ToSaveData()
-        {
-            HttpClient client = new HttpClient();
-            String json = JsonConvert.SerializeObject(_mapWithData);
-            await client.PostAsJsonAsync($"{Consts.HOST_PRESERVING_COMPONENT}/save", json);
-            Console.WriteLine("saved");
-            await Task.Run(async () => {
-                                await Task.Delay(TimeSpan.FromMinutes(1));
-                                ToSaveData();
-                        });
-        }
-
         ~DataBase()
         {
-            ToSaveData();
         }
     }
 }

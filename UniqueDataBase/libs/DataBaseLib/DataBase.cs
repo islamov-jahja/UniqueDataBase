@@ -16,20 +16,33 @@ namespace DataBaseLib
 
         public async Task<string> GetValue(String key)
         {
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.PostAsJsonAsync($"{_dataBaseHost}/getValue", key);
-            
-            using(HttpContent responseContent = response.Content)
+            try
             {
-                return await responseContent.ReadAsStringAsync();
+                using(HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = await client.PostAsJsonAsync($"{_dataBaseHost}/getValue", key);
+            
+                    using(HttpContent responseContent = response.Content)
+                    {
+                        return await responseContent.ReadAsStringAsync();
+                    }
+                }
+            }catch(Exception e)
+            {
+                return null;
             }
         }
 
         public async void SetValue(String key, String value)
         {
             String message = $"{key}:{value}";
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response = await client.PostAsJsonAsync($"{_dataBaseHost}/setValue", message);
+            try{
+                using(HttpClient client = new HttpClient()){
+                    HttpResponseMessage response = await client.PostAsJsonAsync($"{_dataBaseHost}/setValue", message);
+                }
+            }catch(Exception e)
+            {
+            }
         }
     }
 }

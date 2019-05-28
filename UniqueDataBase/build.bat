@@ -6,8 +6,6 @@ if defined version (
     dotnet publish
 	cd ../client1
     dotnet publish
-	cd ../PreservingComponent
-	dotnet publish
     cd ..
 
 	if not exist build_versions (
@@ -22,10 +20,6 @@ if defined version (
         mkdir KeyValueDatabase
         cd KeyValueDatabase
         xcopy ..\..\..\KeyValueDatabase\bin\Debug\netcoreapp2.2\publish /S
-		cd ..
-		mkdir PreservingComponent
-        cd PreservingComponent
-        xcopy ..\..\..\PreservingComponent\bin\Debug\netcoreapp2.2\publish /S
 		cd ..
 		mkdir client1
         cd client1
@@ -42,8 +36,6 @@ if defined version (
 
         echo cd client1 > run.bat
         echo start "client1" dotnet client1.dll >> run.bat
-		echo cd ..\PreservingComponent >> run.bat
-        echo start "PreservingComponent" dotnet PreservingComponent.dll >> run.bat
 		echo cd .. >> run.bat
 		echo call run_servers_with_dB.bat >> run.bat
 

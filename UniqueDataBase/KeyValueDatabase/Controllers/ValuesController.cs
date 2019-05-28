@@ -17,10 +17,26 @@ namespace KeyValueDatabase.Controllers
         private Mailing mailing = Mailing.GetInstance();
 
         // GET api/values
-        [HttpGet]
-        public void Get()
+        [HttpGet("/leader")]
+        public string GetLeader()
         {
-            db.ToSaveData();
+            return db._portOfLeader;
+        }
+
+        [HttpPost("/setLeader")]
+        public void SetPortOfLeader([FromBody]string portOfLeader)
+        {
+            Console.WriteLine($"leader is set: {portOfLeader}");
+            db._portOfLeader = portOfLeader;
+            db.SendDataBase();
+
+        }
+
+        [HttpPost("/toVote")]
+        public void ToVote([FromBody]string port)
+        {
+            Console.WriteLine("To Vote to:" + port);
+            db.ToVote(port);
         }
 
         // GET api/values/5
@@ -32,23 +48,40 @@ namespace KeyValueDatabase.Controllers
 
         // POST api/values
         [HttpPost("/setValue")]
-        public async void SetValue([FromBody] String pairKeyValue)
+        public async Task<string> SetValue([FromBody] String pairKeyValue)
         {
             String[] values = pairKeyValue.Split(':');
-            db.setValue(values[0], values[1]);
+            bool wasSaved = db.SetValue(values[0], values[1]);
             await mailing.MakeNewsletterAsync(pairKeyValue);
+            return JsonConvert.SerializeObject(wasSaved);
         }
 
         [HttpPost("/setWithoutSend")]
         public void SetValueWithoutMakeNewsLetter([FromBody] String pairKeyValue)
         {
             String[] values = pairKeyValue.Split(':');
-            db.setValue(values[0], values[1]);
+            db.SetValue(values[0], values[1]);
+        }
+
+        [HttpPost("/getDict")]
+        public string GetDict()
+        {
+            return db.GetDict();
+        }
+
+        [HttpPost("/sendDict")]
+        public void AddDataToDict([FromBody] String dictionaryWithData)
+        {
+            Dictionary<String, String> tempDict = JsonConvert.DeserializeObject<Dictionary<String, String>>(dictionaryWithData);
+            db.UploadData(tempDict);
+            //проверить работоспособность
         }
 
         [HttpPost("/getValue")]
         public string GetValue([FromBody]String key)
         {
+            Console.WriteLine("au");
+            Console.WriteLine(db.GetValue(key));
             return  db.GetValue(key);
         }
         

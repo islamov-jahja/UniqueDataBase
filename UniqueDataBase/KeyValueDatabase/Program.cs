@@ -15,7 +15,9 @@ namespace KeyValueDatabase
     {
         public static void Main(string[] args)
         {
-            Consts.myURL = args[0];
+            Consts.MY_URL = args[0];
+            Mailing mail = Mailing.GetInstance();
+            DataBase db = DataBase.GetInstance();
             CreateWebHostBuilder(args).Build().Run();
         }
 

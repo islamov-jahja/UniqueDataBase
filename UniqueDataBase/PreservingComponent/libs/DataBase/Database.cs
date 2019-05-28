@@ -65,11 +65,11 @@ namespace PreservingComponent.libs
             if (!_wasSaved && !_isWait)
             {
                 try{
-                    StreamWriter file = new StreamWriter(_adressToFile);
-                    foreach (KeyValuePair<String, String> pair in _mapWithDataToSave)
-                        file.WriteLine($"{pair.Key}:{pair.Value}");
+                    using(StreamWriter file = new StreamWriter(_adressToFile)){
+                        foreach (KeyValuePair<String, String> pair in _mapWithDataToSave)
+                            file.WriteLine($"{pair.Key}:{pair.Value}");
+                    }
 
-                    file.Close();
                     Console.WriteLine("saved");
                     _wasSaved = true;
                 }catch
