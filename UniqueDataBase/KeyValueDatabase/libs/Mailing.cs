@@ -126,8 +126,8 @@ namespace KeyValueDatabase.libs
                 Console.WriteLine("StartToVote");
                 DataBase db = DataBase.GetInstance();
                 db._portOfLeader = Consts.NO_LEADER;
-                db.ToVote(Consts.MY_URL);
                 DataBase._condidateSAndVotes.Clear();
+                db.ToVote(Consts.MY_URL);
                 
                 foreach(string port in urls)    
                 {

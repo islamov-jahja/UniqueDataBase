@@ -41,6 +41,8 @@ namespace client1
             Console.WriteLine(db.GetValue("hello").Result);
             Console.WriteLine(db1.GetValue("hello").Result);
             Console.WriteLine(db2.GetValue("hello").Result);
+            db2.SetValue("hello", "other world");
+            Console.ReadKey();
             Console.ReadKey();
         }
     }
